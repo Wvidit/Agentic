@@ -19,11 +19,7 @@ else:
     # Import AgentCore Gateway as Streamable HTTP MCP Client
     strands_mcp_client = get_streamable_http_mcp_client()
 
-# Define a simple function tool
-@tool
-def add_numbers(a: int, b: int) -> int:
-    """Return the sum of two numbers"""
-    return a+b
+
 
 # Integrate with Bedrock AgentCore
 app = BedrockAgentCoreApp()
@@ -69,9 +65,15 @@ async def invoke(payload, context):
             model=load_model(),
             session_manager=session_manager,
             system_prompt="""
-                You are a helpful assistant with code execution capabilities. Use tools when appropriate.
+                You are a Senior Data Analyst. Your goal is to help users understand their data through code.
+                
+                Rules:
+                1. When the user provides data (numbers, CSV, lists), ALWAYS use the 'code_interpreter' tool.
+                2. Write Python code using 'pandas' to structure the data and 'matplotlib' to visualize it.
+                3. If the user asks for a chart, generate the code to plot it.
+                4. explain your analysis briefly after the code runs.
             """,
-            tools=[code_interpreter.code_interpreter, add_numbers] + tools
+            tools=[code_interpreter.code_interpreter] + tools
         )
 
         # Execute and format response
